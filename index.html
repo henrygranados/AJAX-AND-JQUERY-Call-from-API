@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<style type = "text/css">
+.tableStyle td {
+    border: 1px solid #ddd !important;
+}
+</style>
+</head>
+<body>
+ <form id = "submitForm">
+ <input type="text" id="inputSymbol" class="input-" placeholder="enter symbol">
+ <button type="submit">Get New Quote</button>
+ </form>
+ <div id = 'dataResults'></div>
+<script type="text/javascript">
+
+
+var Request = {};
+
+	$(document).on('ready' ,function(){
+		$("form").submit(function(){
+			var valueEnteredByUser = $("#inputSymbol").val();		
+			if (valueEnteredByUser == null || valueEnteredByUser == ""){
+			       alert("Please enter a valid symbol");
+			    }
+			new Request.symbolExecution(valueEnteredByUser, function(data) {
+				$("#dataContainer").remove();
+			    this.success(data);
+			  
+			});
+			return false;
+		});
+	});
+
+Request.symbolExecution = function(valueEnteredByUser, myfunctionCallBack) {
+    this.symbol = valueEnteredByUser;
+    this.myfunctionCallBack = myfunctionCallBack;
+    this.requestingData();
+};
+
+Request.symbolExecution.prototype.successFunction = function(data) {
+    this.myfunctionCallBack(data);
+};
+
+//AJAX CALL
+Request.symbolExecution.prototype.requestingData = function getAjaxCall() {
+
+        $.ajax({
+        data: { 
+		symbol: this.symbol
+		},
+        url: "http://dev.markitondemand.com/Api/v2/Quote/jsonp",
+        dataType: "jsonp",
+        success: this.successFunction,
+        context: this
+    });
+};	
+
+	Request.symbolExecution.prototype.success = function(data){
+		var $dataContainer = $("<div id='dataContainer'/></div>");
+		$dataContainer.append(this.tableView(data));
+
+		$("#dataResults").append($dataContainer);
+	};
+
+	Request.symbolExecution.prototype.tableView = function(data){
+		var $table = $("<table/>");
+		var	$tbody = $("<tbody/>");
+		var	tableRow = new Array();
+		
+		//Adding rows and columns to the table
+		tableRow.push("<tr><td><span style='color:#424242;font-family:Sans-Serif;font-size:15px;'>",data.Name,"</span></td></tr>");
+		tableRow.push("<tr><td><span style='color:#424242;font-family:Palatino Linotype;font-size:21px;'>$",data.LastPrice,"</span></td><td><span style='color:#008400;font-family:Palatino;font-size:17px;float:right;'>", data.Change.toFixed(2)," ",'('+data.ChangePercent.toFixed(2)+')',"%</span></td></tr>");
+		tableRow.push("<tr><td><span style='color:#737373;font-family:Sans-Serif;font-size:11px;'>Range</span></td><td><span style='float:right;'>",data.Low," - ",data.High,"</span></td></tr>");
+		tableRow.push("<tr><td><span style='color:#737373;font-family:Sans-Serif;font-size:11px;'>Open</span></td><td><span style='float:right;'>",data.Open.toFixed(2),"</span></td><tr>");//Open
+		tableRow.push("<tr><td><span style='color:#737373;font-family:Sans-Serif;font-size:11px;'>Volume</span></td><td><span style='float:right;'>",data.LastPrice,"</span></td></tr>");//Volume
+		tableRow.push("<tr><td><span style='color:#737373;font-family:Sans-Serif;font-size:11px;'>MarketCap</span></td><td><span style='float:right;'>",data.MarketCap,"</span></td></tr>");//MarketCap
+		tableRow.push("<tr><td></td><td><span style='color:#737373;font-family:Sans-Serif;font-size:11px;'>",data.Timestamp,"</span></td><tr>");//Timestamp
+				
+		$tbody.append(tableRow.join(""));
+		$table.append($tbody);
+		$table.addClass("tableStyle table");	
+
+		return $table;
+	};	
+</script>
+
+</body>
+
+</html>
