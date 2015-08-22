@@ -71,7 +71,7 @@ Request.symbolExecution.prototype.requestingData = function getAjaxCall() {
 	Request.symbolExecution.prototype.tableView = function(data){
 		var $table = $("<table/>");
 		var	$tbody = $("<tbody/>");
-		var	tableRow = new Array();
+		var	tableRow = [];
 		
 		//Adding rows and columns to the table
 		tableRow.push("<tr><td><span style='color:#424242;font-family:Sans-Serif;font-size:15px;'>",data.Name,"</span></td></tr>");
