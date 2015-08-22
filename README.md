@@ -1,4 +1,4 @@
-# AJAX-AND-JQUERY-Call-from-API
+# Ajax-Call-From-API
 
 Project Summary
 
